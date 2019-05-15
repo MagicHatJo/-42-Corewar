@@ -12,61 +12,50 @@
 
 #include "libft.h"
 
-static t_list	*assign_save(t_list **save, int fd)
-{
-	t_list	*tmp;
+# define FDS 4986
 
-	tmp = *save;
-	while (tmp)
-	{
-		if ((int)(tmp->content_size) == fd)
-			return (tmp);
-		tmp = tmp->next;
-	}
-	tmp = ft_lstnew("\0", 0);
-	ft_lstadd(save, tmp);
-	return (*save);
+char	*ft_strjoinfr(char *s1, char const *s2)
+{
+	char    *new;
+
+	if (!s1 || !s2)
+		return (NULL);
+	if (!(new = ft_strnew(ft_strlen(s1) + ft_strlen(s2))))
+		return (NULL);
+	if ((new = ft_strncat(new, s1, ft_strlen(s1) + ft_strlen(s2))))
+		if ((new = ft_strncat(new, s2, ft_strlen(s1) + ft_strlen(s2))))
+		{
+			free(s1);
+			return (new);
+		}
+	return (NULL);
 }
 
-static void		cleanup(t_list *ptr)
+int             get_next_line(const int fd, char **line)
 {
-	char	*tmp;
+	static char		*s[FDS];
+	char			pipe[BUFF_SIZE + 1];
+	char			*place;
+	int				x;
 
-	if ((tmp = ft_strchr(ptr->content, '\n')))
+	if (fd < 0 || fd >= FDS || !line || (!((!s[fd]) ? (s[fd] = ft_strnew(0))
+		: (s[fd]))) || ((x = read(fd, pipe, 0)) == -1))
+		return (-1);
+	while ((x = read(fd, pipe, BUFF_SIZE)) > 0)
 	{
-		tmp = ft_strdup(tmp + 1);
-		free(ptr->content);
-		ptr->content = tmp;
+		pipe[x] = '\0';
+		s[fd] = ft_strjoinfr(s[fd], pipe);
 	}
-	else
-		ft_strclr(ptr->content);
-}
-
-int				get_next_line(const int fd, char **line)
-{
-	char			buf[BUFF_SIZE + 1];
-	char			*tmp;
-	int				check;
-	static t_list	*save;
-	t_list			*ptr;
-
-	ERROR_CHECK(fd < 0 || line == NULL || read(fd, buf, 0) < 0);
-	ptr = assign_save(&save, fd);
-	while ((check = read(fd, buf, BUFF_SIZE)) > 0)
+	if (!(s[fd][0] == '\0'))
 	{
-		buf[check] = '\0';
-		ERROR_CHECK(!(tmp = ft_strjoin(ptr->content, buf)));
-		free(ptr->content);
-		ptr->content = tmp;
-		BREAK_CHECK((ft_strchr(ptr->content, '\n')));
+		if (!(place = ft_strchr(s[fd], '\n')))
+			place = ft_strnew(0);
+		else if (!(*place = '\0'))
+			place = ft_strdup(place + 1);
+		(*line = ft_strdup(s[fd])) ? ft_strdel(&s[fd]) : 1;
+		(s[fd] = ft_strdup(place)) ? (free(place)) : 1;
+		return (1);
 	}
-	if (!check && !ft_strlen(ptr->content))
-	{
-		ft_strclr(*line);
-		return (0);
-	}
-	ERROR_CHECK(!(*line = ft_strnew(ft_strlen(ptr->content))));
-	*line = ft_strccpy(*line, ptr->content, '\n');
-	cleanup(ptr);
-	return (1);
+	ft_strclr(*line);
+	return (x);
 }

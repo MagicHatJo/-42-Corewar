@@ -121,7 +121,7 @@ int				parser(t_byte *b, char *line, int lc)
 		*cmt = 0;
 	cmt = ft_strtrim(line);
 	if (!cmt[0])
-		return (2);
+		return (0);
 	coms = ft_strsplitwsp(cmt);
 	free(cmt);
 	i = 0;

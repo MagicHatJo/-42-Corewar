@@ -32,6 +32,6 @@ fclean:
 	@make -C vm fclean
 	@rm -f $(ASSEMBLER) $(COREWAR)
 
-re: clean all
+re: fclean all
 
 .PHONY: all clean fclean re

@@ -19,15 +19,16 @@ static int	get_name(char str[], int fd, char *file)
 	int		i;
 
 	ZERO_CHECK(!(get_next_line(fd, &line)));
+	ft_printf("{%s}\n", line);
 	if (!ft_strnequ(line, NAME_CMD_STRING, ft_strlen(NAME_CMD_STRING)) ||
 		!(dq = ft_strchr(line, '"')))
-		return (err_invheader(file, line));
+		return (err_invheader(file, line, __LINE__));
 	dq++;
 	i = -1;
 	while (dq[++i] && dq[i] != '"' && i < PROG_NAME_LENGTH)
 		str[i] = dq[i];
 	if (dq[i] != '"')
-		return (err_invheader(file, line));
+		return (err_invheader(file, line, __LINE__));
 	free(line);
 	return (1);
 }
@@ -41,13 +42,13 @@ static int	get_comment(char str[], int fd, char *file)
 	ZERO_CHECK(!(get_next_line(fd, &line)));
 	if (!ft_strnequ(line, COMMENT_CMD_STRING, ft_strlen(COMMENT_CMD_STRING)) ||
 		!(dq = ft_strchr(line, '"')))
-		return (err_invheader(file, line));
+		return (err_invheader(file, line, __LINE__));
 	dq++;
 	i = -1;
 	while (dq[++i] && dq[i] != '"' && i < COMMENT_LENGTH)
 		str[i] = dq[i];
 	if (dq[i] != '"')
-		return (err_invheader(file, line));
+		return (err_invheader(file, line, __LINE__));
 	free(line);
 	return (1);
 }

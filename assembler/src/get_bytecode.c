@@ -27,7 +27,7 @@ int		get_bytecode(t_byte *f, int fd, char *file)
 		if (line[0] && !(parser(&tmp, line, lc)))
 		{
 			t_byte_free(&tmp);
-			return (err_invheader(file, line));
+			return (err_invheader(file, line, __LINE__));
 		}
 		tmp.code ? t_byte_append(f, tmp) : 0;
 		tmp.code && tmp.l[0].name ? label_append(f, tmp) : 0;

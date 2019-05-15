@@ -21,7 +21,7 @@ void	op_aff(t_cyc *cyc, t_pc *pc)
 	if (cyc->mem[MEM(pc->i + 1)].byte == 0x40)
 	{
 		chr = pc->r[cyc->mem[MEM(pc->i + 2)].byte];
-		ft_putchar(chr % 256);
+		ft_putchar(ft_isprint(chr) ? chr : '!');
 		pc->i = MEM(pc->i + 3);
 	}
 	else

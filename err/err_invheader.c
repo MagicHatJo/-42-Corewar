@@ -12,10 +12,10 @@
 
 #include "err.h"
 
-int	err_invheader(char *file, char *line)
+int	err_invheader(char *file, char *line, int ln)
 {
 	if (line)
 		free(line);
-	ft_printf("Error: invalid header in %s\n", file);
+	ft_printf("Error: invalid header in %s{DEBUG LINE [%d]}\n", file, ln);
 	return (0);
 }

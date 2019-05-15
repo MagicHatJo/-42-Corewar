@@ -22,6 +22,6 @@ int		err_invop(char *op, int l);
 void	err_invarg(char *op, int l);
 void	err_invflag(char c);
 void	err_malloc(char *fun);
-int		err_invheader(char *file, char *line);
+int		err_invheader(char *file, char *line, int ln);
 
 #endif

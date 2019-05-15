@@ -40,7 +40,7 @@ OBJ_DIR = obj
 OBJ = $(addsuffix .o, $(addprefix $(OBJ_DIR)/, $(SRC)))
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror $(INC)
+CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address $(INC)
 MAKEOPTS = -j4
 
 all: $(OBJ_DIR) $(NAME)
@@ -56,7 +56,7 @@ $(OBJ_DIR)/%.o: %.c
 
 $(NAME): $(OBJ)
 	@make -C ../libft
-	@$(CC) $^ -o $@ $(LIB)
+	@$(CC) $(CFLAGS) $^ -o $@ $(LIB)
 
 clean:
 	@printf "\033[33mcleaning assembler objects...\033[0m\n"

@@ -24,8 +24,14 @@ static uint8_t	first_check(t_cyc *cyc, t_pc *pc, uint8_t acb)
 
 static uint8_t	second_check(t_cyc *cyc, t_pc *pc, uint8_t acb, int16_t *loc)
 {
+	int8_t	tmp;
+
+	tmp = 0;
 	if (((acb >> 4) & 3) == REG_CODE)
-		*loc = pc->r[cyc->mem[MEM(pc->i + 3)].byte];
+	{
+		tmp = cyc->mem[MEM(pc->i + 3)].byte;
+		*loc = REG(tmp) ? pc->r[tmp] : 0;
+	}
 	else if (((acb >> 4) & 3) == DIR_CODE || ((acb >> 4) & 3) == IND_CODE)
 		cw_memren(loc, &cyc->mem[MEM(pc->i + 3)], IND_SIZE);
 	else
@@ -42,7 +48,11 @@ static uint8_t	third_check(t_cyc *cyc, t_pc *pc, uint8_t acb, int16_t *loc)
 
 	tmp = 0;
 	if (((acb >> 2) & 3) == REG_CODE)
-		tmp = pc->r[cyc->mem[MEM(pc->i + 3 + ACB_ARG_1((acb >> 4) & 3))].byte];
+	{
+		tmp = cyc->mem[MEM(pc->i + 3 + ACB_ARG_1((acb >> 4) & 3))].byte;
+		if (REG(tmp))
+			tmp = pc->r[tmp];
+	}
 	else if (((acb >> 2) & 3) == DIR_CODE || ((acb >> 2) & 3) == IND_CODE)
 		cw_memren(&tmp,
 					&cyc->mem[MEM(pc->i + 3 + ACB_ARG_1((acb >> 4) & 3))],

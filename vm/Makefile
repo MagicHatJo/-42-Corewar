@@ -100,7 +100,7 @@ $(OBJ_DIR)/%.o: %.c
 
 $(NAME): $(OBJ)
 	@make -C ../libft
-	@$(CC) $^ -o $@ $(LIB)
+	@$(CC) $(CFLAGS) $^ -o $@ $(LIB)
 
 clean:
 	@printf "\033[33mcleaning corewar objects...\033[0m\n"

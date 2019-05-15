@@ -55,9 +55,9 @@ static void	update_breakdown(t_ncrs *ncrs, t_cyc *cycle)
 	ncrs->init_y += 2;
 }
 
-static void	update_lower(t_ncrs *ncrs)
+static void	update_lower(t_ncrs *ncrs, t_cyc *c)
 {
-	PRINT_INFO_N("CYCLE_TO_DIE : %d", CYCLE_TO_DIE);
+	PRINT_INFO_N("CYCLE_TO_DIE : %-4d", c->die);
 	ncrs->init_y += 2;
 	PRINT_INFO_N(" CYCLE_DELTA : %d", CYCLE_DELTA);
 	ncrs->init_y += 2;
@@ -79,6 +79,6 @@ void		update_infoblock(t_ncrs *ncrs, t_cyc *c, t_head *head, t_flag *flag)
 	update_upper(ncrs, c, flag);
 	update_players(ncrs, c, head);
 	update_breakdown(ncrs, c);
-	update_lower(ncrs);
+	update_lower(ncrs, c);
 	wnoutrefresh(ncrs->infowin);
 }
