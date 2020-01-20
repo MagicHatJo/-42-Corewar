@@ -5,36 +5,65 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jochang <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/09 23:50:27 by jochang           #+#    #+#             */
-/*   Updated: 2019/03/11 22:34:05 by jtashako         ###   ########.fr       */
+/*   Created: 2019/09/23 21:54:59 by jochang           #+#    #+#             */
+/*   Updated: 2019/09/23 21:55:00 by jochang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "asm.h"
 
-int		get_bytecode(t_byte *f, int fd, char *file)
+static t_line	*init_line(int i, int prog_size)
 {
-	char		*line;
-	t_label		*l;
-	t_byte		tmp;
-	static int	lc;
+	t_line	*line;
 
-	l = NULL;
-	while (get_next_line(fd, &line))
-	{
-		lc++;
-		tmp = t_byte_init();
-		if (line[0] && !(parser(&tmp, line, lc)))
-		{
-			t_byte_free(&tmp);
-			return (err_invheader(file, line, __LINE__));
-		}
-		tmp.code ? t_byte_append(f, tmp) : 0;
-		tmp.code && tmp.l[0].name ? label_append(f, tmp) : 0;
-		l = tmp.label ? label_add(tmp, *f, l) : l;
-		t_byte_free(&tmp);
+	line = ft_memalloc(sizeof(t_line));
+	line->line_number = i;
+	line->prior_data = prog_size;
+	line->cmd = 16;
+	return (line);
+}
+
+static int		mem_manage(t_token *token, char *cmd, t_line *line,
+	t_table *table)
+{
+	if (token->state == NONE)
+		free(token->content);
+	if (*cmd == 0)
 		free(line);
+	else if (!populate_table(table, line))
+	{
+		free(line->label);
+		free(line);
+		return (0);
 	}
-	f->code = label_fill(*f, l);
+	free(cmd);
+	return (1);
+}
+
+int				get_bytecode(t_table *table, int fd)
+{
+	char	*cmd;
+	t_token	token;
+	t_line	*line;
+	int		i;
+
+	i = 0;
+	while (get_next_line(fd, &cmd))
+	{
+		line = init_line(++i, table->prog_size);
+		sanitize(&cmd);
+		while ((token = lexer(cmd)).state != NONE)
+		{
+			if (!parser(line, &token))
+			{
+				free(token.content);
+				return (0);
+			}
+			if (token.state != LABEL)
+				free(token.content);
+		}
+		if (!mem_manage(&token, cmd, line, table))
+			return (0);
+	}
 	return (1);
 }

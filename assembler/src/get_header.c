@@ -5,61 +5,58 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jochang <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/10 00:36:51 by jochang           #+#    #+#             */
-/*   Updated: 2019/03/11 22:14:59 by jtashako         ###   ########.fr       */
+/*   Created: 2019/09/21 23:47:41 by jochang           #+#    #+#             */
+/*   Updated: 2019/09/21 23:47:41 by jochang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "asm.h"
 
-static int	get_name(char str[], int fd, char *file)
+static int	get_name(char prog_name[], int fd)
 {
 	char	*line;
 	char	*dq;
 	int		i;
 
-	ZERO_CHECK(!(get_next_line(fd, &line)));
-	ft_printf("{%s}\n", line);
-	if (!ft_strnequ(line, NAME_CMD_STRING, ft_strlen(NAME_CMD_STRING)) ||
+	if (!get_next_line(fd, &line) ||
+		!ft_strnequ(line, NAME_CMD_STRING, ft_strlen(NAME_CMD_STRING)) ||
 		!(dq = ft_strchr(line, '"')))
-		return (err_invheader(file, line, __LINE__));
+		return (0);
 	dq++;
 	i = -1;
 	while (dq[++i] && dq[i] != '"' && i < PROG_NAME_LENGTH)
-		str[i] = dq[i];
+		prog_name[i] = dq[i];
 	if (dq[i] != '"')
-		return (err_invheader(file, line, __LINE__));
+		return (0);
 	free(line);
 	return (1);
 }
 
-static int	get_comment(char str[], int fd, char *file)
+static int	get_comment(char comment[], int fd)
 {
 	char	*line;
 	char	*dq;
 	int		i;
 
-	ZERO_CHECK(!(get_next_line(fd, &line)));
-	if (!ft_strnequ(line, COMMENT_CMD_STRING, ft_strlen(COMMENT_CMD_STRING)) ||
+	if (!get_next_line(fd, &line) ||
+		!ft_strnequ(line, COMMENT_CMD_STRING, ft_strlen(COMMENT_CMD_STRING)) ||
 		!(dq = ft_strchr(line, '"')))
-		return (err_invheader(file, line, __LINE__));
+		return (0);
 	dq++;
 	i = -1;
 	while (dq[++i] && dq[i] != '"' && i < COMMENT_LENGTH)
-		str[i] = dq[i];
+		comment[i] = dq[i];
 	if (dq[i] != '"')
-		return (err_invheader(file, line, __LINE__));
+		return (0);
 	free(line);
 	return (1);
 }
 
-int			get_header(t_header *h, int fd, char *file)
+int			get_header(t_table *table, int fd)
 {
-	ZERO_CHECK(!(get_name(h->prog_name, fd, file)));
-	ZERO_CHECK(!(get_comment(h->comment, fd, file)));
-	h->magic = COREWAR_EXEC_MAGIC;
-	h->magic = END32(h->magic);
-	h->prog_size = 0;
-	h->prog_size = END32(h->prog_size);
+	if (!get_name(table->prog_name, fd))
+		return (return_error("Invalid name format"));
+	if (!(get_comment(table->comment, fd)))
+		return (return_error("Invalid comment format"));
 	return (1);
 }

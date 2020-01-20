@@ -38,6 +38,7 @@ static void	corewar(int ac, char **av, t_flag *flags)
 		mem = init_mem(head, n);
 		init_pc(mem, head, n);
 		cyc = init_cyc(mem, flags, n);
+		ft_printf("player count is %d\n", n);
 		player_intros(head, n);
 		vm(cyc, head, flags);
 		display_winner(head, cyc->last);

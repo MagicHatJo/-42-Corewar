@@ -6,7 +6,7 @@
 /*   By: jochang <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 19:35:17 by jochang           #+#    #+#             */
-/*   Updated: 2019/03/12 19:35:18 by jochang          ###   ########.fr       */
+/*   Updated: 2020/01/18 13:53:42 by smonroe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,6 @@ t_flag			ft_setopt(int ac, char **av)
 		err_invflag(opt);
 		flags = set_flags(opt, flags);
 	}
-	flags.w = (flags.w && flags.n) ? 1000000 / flags.w : 0;
+	flags.w = (flags.w && flags.n) ? 1000000 / flags.w : 50;
 	return (flags);
 }

@@ -5,70 +5,87 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jochang <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2019/05/12 14:08:49 by jochang           #+#    #+#              #
-#    Updated: 2019/05/12 14:08:49 by jochang          ###   ########.fr        #
+#    Created: 2019/09/21 20:46:21 by jochang           #+#    #+#              #
+#    Updated: 2020/01/18 15:01:49 by jochang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = asm
 
-SRC = arg \
-	assembler \
-	ft_strsplitwsp \
-	get_bytecode \
-	get_header \
-	label \
-	op \
-	parser \
-	t_byte \
-	valid_extension \
-	err_invarg \
-	err_invfile \
-	err_invflag \
-	err_invheader \
-	err_invop \
-	err_malloc \
-	err_nofile \
+SRC =	main \
+		valid_extension \
+		valid_number \
+		assembler \
+		get_header \
+		get_bytecode \
+		op \
+		sanitize \
+		lexer \
+		parser \
+		populate_table \
+		parse_parameter \
+		process_labels \
+		make_cor \
+		write_parameters \
+		error \
 
-INC = -I ../inc \
-	-I ../libft/inc \
+INC =	-I inc \
+		-I ../lib/libft/inc \
+		-I ../lib/libfd/inc \
 
-LIB = -L ../libft -lft
-VPATH= src:../err
+LIB =	-L ../lib/libft -lft \
+		-L ../lib/libfd -lfd \
+
+VPATH = src
+
+SRC_DIR = src
 OBJ_DIR = obj
+BIN_DIR = bin
 
 OBJ = $(addsuffix .o, $(addprefix $(OBJ_DIR)/, $(SRC)))
 
+DEP = $(OBJ:%.o=%.d)
+
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address $(INC)
+#CC = clang-6.0
+CFLAGS = -Wall -Wextra -Werror $(INC)
+LDFLAGS = $(LIB)
 MAKEOPTS = -j4
 
+.PHONY: all
 all: $(OBJ_DIR) $(NAME)
+
+$(OBJ_DIR):
+	@printf "\033[32mCreating: \033[0m%s\n" $(OBJ_DIR)
+	@mkdir -p $(OBJ_DIR)
 
 -include $(DEP)
 
-$(OBJ_DIR):
-	@printf "\033[32mmaking assembler objects\033[0m\n"
-	@mkdir -p $(OBJ_DIR)
-
 $(OBJ_DIR)/%.o: %.c
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
+	@printf "\033[32mCompiling: \033[0m%s\n" $<
+	@$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 $(NAME): $(OBJ)
-	@make -C ../libft
-	@$(CC) $(CFLAGS) $^ -o $@ $(LIB)
+	@make -C ../lib/libft
+	@make -C ../lib/libfd
+	@mkdir -p $(BIN_DIR)
+	@printf "\033[32mLinking: \033[0m%s\n" $(NAME)
+	@$(CC) $^ $(LDFLAGS) -o $(BIN_DIR)/$@
 
+.PHONY: clean
 clean:
-	@printf "\033[33mcleaning assembler objects...\033[0m\n"
-	@rm -f $(OBJ)
-	@make -C ../libft clean
+	@make -C ../lib/libft clean
+	@make -C ../lib/libfd clean
+	@printf "\033[33mCleaning: \033[0m%s repository\n" $(NAME)
 
+.PHONY: fclean
 fclean: clean
-	@printf "\033[33mcleaning assembler repository...\033[0m\n"
+	@make -C ../lib/libft fclean
+	@make -C ../lib/libfd fclean
+	@printf "\033[33mCleaning: \033[0m%s\n" $(BIN_DIR)
+	@rm -rf $(BIN_DIR)
 	@rm -rf $(OBJ_DIR)
-	@rm -f $(NAME)
-	@make -C ../libft fclean
+	@rm -rf $(NAME).dSYM
 
+.PHONY: re
 re: fclean all
-
-.PHONY: all clean fclean re

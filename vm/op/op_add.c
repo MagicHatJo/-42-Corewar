@@ -19,17 +19,17 @@ void	op_add(t_cyc *cyc, t_pc *pc)
 	uint8_t	c;
 	uint8_t	acb;
 
-	acb = cyc->mem[MEM(pc->i + 1)].byte;
-	a = cyc->mem[MEM(pc->i + 2)].byte;
-	b = cyc->mem[MEM(pc->i + 3)].byte;
-	c = cyc->mem[MEM(pc->i + 4)].byte;
+	acb = cyc->mem[mem(pc->i + 1)].byte;
+	a = cyc->mem[mem(pc->i + 2)].byte;
+	b = cyc->mem[mem(pc->i + 3)].byte;
+	c = cyc->mem[mem(pc->i + 4)].byte;
 	if ((acb == 0x54 || acb == 0x55 || acb == 0x56 || acb == 0x57) &&
-		REG(a) && REG(b) && REG(c))
+		reg(a) && reg(b) && reg(c))
 	{
 		pc->r[c] = pc->r[b] + pc->r[a];
-		pc->i = MEM(pc->i + acb_len(acb, 0));
+		pc->i = mem(pc->i + acb_len(acb, 0));
 		pc->carry = pc->r[c] ? 0 : 1;
 	}
 	else
-		pc->i = MEM(pc->i + acb_len(acb, 0));
+		pc->i = mem(pc->i + acb_len(acb, 0));
 }

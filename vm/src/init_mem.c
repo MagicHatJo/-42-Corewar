@@ -6,7 +6,7 @@
 /*   By: jochang <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 17:45:19 by jochang           #+#    #+#             */
-/*   Updated: 2019/03/13 17:45:20 by jochang          ###   ########.fr       */
+/*   Updated: 2020/01/18 15:11:05 by jochang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_mem		*init_mem(t_head *head, int n)
 	{
 		k = -1;
 		offset = ((MEM_SIZE / n) * i);
+		offset -= offset % 64;
 		while (++k < head[i].size)
 		{
 			mem[k + offset].byte = head[i].code[k];

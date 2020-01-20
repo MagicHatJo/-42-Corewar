@@ -12,7 +12,7 @@
 
 #include "gui.h"
 
-static void	print_dash(t_ncrs *ncrs, int offset, int i, int p)
+static void		print_dash(t_ncrs *ncrs, int offset, int i, int p)
 {
 	int		k;
 
@@ -23,7 +23,7 @@ static void	print_dash(t_ncrs *ncrs, int offset, int i, int p)
 	wattroff(ncrs->infowin, COLOR_PAIR(i));
 }
 
-static int	get_lim(t_cyc *cycle, uint8_t w)
+static int		get_lim(t_cyc *cycle, uint8_t w)
 {
 	int		i;
 	int		n;
@@ -41,7 +41,19 @@ static int	get_lim(t_cyc *cycle, uint8_t w)
 	return (50 + (n >> 1));
 }
 
-void		print_breakdown(t_ncrs *ncrs, t_cyc *cycle, uint8_t w)
+static void		init_line(t_ncrs *ncrs)
+{
+	wattroff(ncrs->infowin, A_BOLD);
+	mvwprintw(ncrs->infowin, ncrs->init_y, ncrs->init_x + 1, INIT_DASHES);
+	wattron(ncrs->infowin, A_BOLD);
+}
+
+static uint32_t	live_count(t_cyc *cyc, int i, uint8_t w)
+{
+	return (w ? cyc->prev_live[i] : cyc->current_live[i]);
+}
+
+void			print_breakdown(t_ncrs *ncrs, t_cyc *cycle, uint8_t w)
 {
 	int		i;
 	int		p;
@@ -51,20 +63,20 @@ void		print_breakdown(t_ncrs *ncrs, t_cyc *cycle, uint8_t w)
 	i = -1;
 	lim = get_lim(cycle, w);
 	offset = 1;
-	wattron(ncrs->infowin, GRAY_TEXT);
-	PRINT_INFO(INIT_BRACKETS);
-	INIT_LINE;
+	wattron(ncrs->infowin, COLOR_PAIR(21));
+	print_info(ncrs, INIT_BRACKETS);
+	init_line(ncrs);
 	if (cycle->breakdown[w])
 	{
 		while (++i < cycle->num_champs)
 		{
-			if (LIVE_COUNT && cycle->breakdown[w])
+			if (live_count(cycle, i, w) && cycle->breakdown[w])
 			{
-				p = LIVE_COUNT * lim / cycle->breakdown[w];
+				p = live_count(cycle, i, w) * lim / cycle->breakdown[w];
 				print_dash(ncrs, offset, i + 1, p);
 				offset += p;
 			}
 		}
 	}
-	wattroff(ncrs->infowin, GRAY_TEXT);
+	wattroff(ncrs->infowin, COLOR_PAIR(21));
 }

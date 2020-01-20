@@ -36,12 +36,8 @@ static void	calculate_explosion(char **p, t_coord c, int timer)
 
 void		explosion(t_splash s, char *p, int timer)
 {
-	char	*top;
-	double	t;
 	t_coord	c;
 
-	t = (1.0 * timer) / NUM_FRAMES;
-	top = p;
 	c.y = s.miny;
 	while (c.y <= s.maxy)
 	{

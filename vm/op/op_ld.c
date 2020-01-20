@@ -16,45 +16,45 @@ static uint8_t	reg_check(t_pc *pc, uint8_t acb)
 {
 	if (((acb >> 4) & 3) == REG_CODE)
 		return (1);
-	pc->i = MEM(pc->i + acb_len((acb >> 2), 0));
+	pc->i = mem(pc->i + acb_len((acb >> 2), 0));
 	return (0);
 }
 
 static uint8_t	dir_check(t_cyc *cyc, t_pc *pc, uint8_t acb)
 {
-	uint8_t	reg;
+	uint8_t	r;
 
 	if (((acb >> 6) & 3) != DIR_CODE)
 		return (0);
-	reg = cyc->mem[MEM(pc->i + 6)].byte;
-	if (REG(reg))
+	r = cyc->mem[mem(pc->i + 6)].byte;
+	if (reg(r))
 	{
-		cw_memren(&pc->r[reg], &cyc->mem[MEM(pc->i + 2)], REG_SIZE);
-		pc->i = MEM(pc->i + acb_len((acb >> 2), 0));
-		pc->carry = (pc->r[reg]) ? 0 : 1;
+		cw_memren(&pc->r[r], &cyc->mem[mem(pc->i + 2)], REG_SIZE);
+		pc->i = mem(pc->i + acb_len((acb >> 2), 0));
+		pc->carry = (pc->r[r]) ? 0 : 1;
 	}
 	else
-		pc->i = MEM(pc->i + acb_len((acb >> 2), 0));
+		pc->i = mem(pc->i + acb_len((acb >> 2), 0));
 	return (1);
 }
 
 static uint8_t	ind_check(t_cyc *cyc, t_pc *pc, uint8_t acb)
 {
-	uint8_t	reg;
+	uint8_t	r;
 	int16_t	loc;
 
 	if (((acb >> 6) & 3) != IND_CODE)
 		return (0);
-	reg = cyc->mem[MEM(pc->i + 4)].byte;
-	cw_memren(&loc, &cyc->mem[MEM(pc->i + 2)], IND_SIZE);
-	if (REG(reg))
+	r = cyc->mem[mem(pc->i + 4)].byte;
+	cw_memren(&loc, &cyc->mem[mem(pc->i + 2)], IND_SIZE);
+	if (reg(r))
 	{
-		cw_memren(&pc->r[reg], &cyc->mem[MEM(pc->i + IDX(loc))], REG_SIZE);
-		pc->i = MEM(pc->i + acb_len((acb >> 2), 0));
-		pc->carry = (pc->r[reg]) ? 0 : 1;
+		cw_memren(&pc->r[r], &cyc->mem[mem(pc->i + idx(loc))], REG_SIZE);
+		pc->i = mem(pc->i + acb_len((acb >> 2), 0));
+		pc->carry = (pc->r[r]) ? 0 : 1;
 	}
 	else
-		pc->i = MEM(pc->i + acb_len((acb >> 2), 0));
+		pc->i = mem(pc->i + acb_len((acb >> 2), 0));
 	return (1);
 }
 
@@ -62,9 +62,12 @@ void			op_ld(t_cyc *cyc, t_pc *pc)
 {
 	uint8_t	acb;
 
-	acb = cyc->mem[MEM(pc->i + 1)].byte;
-	RETURN_CHECK(!reg_check(pc, acb));
-	RETURN_CHECK(dir_check(cyc, pc, acb));
-	RETURN_CHECK(ind_check(cyc, pc, acb));
-	pc->i = MEM(pc->i + acb_len((acb >> 2), 0));
+	acb = cyc->mem[mem(pc->i + 1)].byte;
+	if (!reg_check(pc, acb))
+		return ;
+	if (dir_check(cyc, pc, acb))
+		return ;
+	if (ind_check(cyc, pc, acb))
+		return ;
+	pc->i = mem(pc->i + acb_len((acb >> 2), 0));
 }

@@ -3,64 +3,71 @@
 /*                                                        :::      ::::::::   */
 /*   assembler.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtashako <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jochang <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/11 22:48:30 by jtashako          #+#    #+#             */
-/*   Updated: 2019/03/11 22:48:49 by jtashako         ###   ########.fr       */
+/*   Created: 2019/09/21 22:47:26 by jochang           #+#    #+#             */
+/*   Updated: 2019/09/21 22:47:27 by jochang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "asm.h"
 
-static void	new_cor(char *fn, t_header s, t_byte file)
+static int	valid_program_size(t_table *table)
 {
-	char	*cor;
-	int		fd;
-
-	cor = ft_strnew(ft_strlen(fn) + 2);
-	cor = ft_strccpy(cor, fn, '.');
-	cor = ft_strcat(cor, ".cor");
-	fd = open(cor, O_CREAT | O_RDWR | O_TRUNC, 0777);
-	free(cor);
-	write(fd, &s, HEADER_SIZE);
-	write(fd, file.code, file.count);
-	close(fd);
+	return (table->prog_size > CHAMP_MAX_SIZE ? 0 : 1);
 }
 
-static void	assembler(char *file)
+static void	cleanup(t_table *table)
 {
-	int			fd;
-	t_header	h;
-	t_byte		b;
+	t_line		*line_node;
+	t_lookup	*lookup_node;
+	int			i;
+
+	while (!deque_empty(table->commands))
+	{
+		line_node = deque_pop_front(table->commands);
+		free(line_node->label);
+		i = -1;
+		while (++i < line_node->argc)
+			if (line_node->param_label[i])
+				free(line_node->param_label[i]);
+		free(line_node);
+	}
+	while (!deque_empty(table->labels))
+	{
+		lookup_node = deque_pop_front(table->labels);
+		free(lookup_node->label);
+		free(lookup_node);
+	}
+	free(table->commands);
+	free(table->labels);
+}
+
+int			assembler(char *file)
+{
+	int		fd;
+	t_table	table;
 
 	fd = open(file, O_RDONLY);
-	if (fd == -1 || (read(fd, &fd, 0)) == -1)
-		err_invfile(file);
-	ft_memset(&h, 0, HEADER_SIZE);
-	b = t_byte_init();
-	if (get_header(&h, fd, file) && get_bytecode(&b, fd, file))
+	if (fd < 0 || read(fd, &fd, 0) < 0)
+		return (return_error2(file, "not found"));
+	ft_memset(&table, 0, sizeof(t_table));
+	table.commands = deque_init();
+	table.labels = deque_init();
+	if (get_header(&table, fd) && get_bytecode(&table, fd))
 	{
-		h.prog_size = END32(b.count);
-		new_cor(file, h, b);
-		t_byte_free(&b);
-	}
-	close(fd);
-}
-
-int			main(int ac, char **av)
-{
-	int		i;
-
-	err_nofile("asm", ac);
-	i = 0;
-	while (++i < ac)
-	{
-		if (valid_extension(av[i], "s"))
-			assembler(av[i]);
-		else if (valid_extension(av[i], "cor"))
-			ft_printf("Disassembler not implemented\n");
+		if (valid_program_size(&table))
+		{
+			process_labels(&table);
+			make_cor(file, &table);
+			ft_printf("\033[32mCompiled:\033[0m %s\n", file);
+		}
 		else
-			err_invfile(av[1]);
+			ft_printf("\033[31mError:\033[0m %s\n", "Program too large");
 	}
+	else
+		ft_printf("\033[31mError:\033[0m %s %s\n", "Invalid file :", file);
+	close(fd);
+	cleanup(&table);
 	return (0);
 }

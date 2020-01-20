@@ -14,12 +14,12 @@
 
 static void	update_border(t_ncrs *ncrs)
 {
-	wattron(ncrs->memwin, BORDER_COLOR);
-	wattron(ncrs->infowin, BORDER_COLOR);
+	wattron(ncrs->memwin, COLOR_PAIR(20));
+	wattron(ncrs->infowin, COLOR_PAIR(20));
 	wborder(ncrs->memwin, '*', '*', '*', '*', '*', '*', '*', '*');
 	wborder(ncrs->infowin, '*', '*', '*', '*', '*', '*', '*', '*');
-	wattroff(ncrs->memwin, BORDER_COLOR);
-	wattroff(ncrs->infowin, BORDER_COLOR);
+	wattroff(ncrs->memwin, COLOR_PAIR(20));
+	wattroff(ncrs->infowin, COLOR_PAIR(20));
 }
 
 static void	update_current_live(t_cyc *cycle)

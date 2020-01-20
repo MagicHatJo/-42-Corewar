@@ -19,16 +19,16 @@ void	op_sub(t_cyc *cyc, t_pc *pc)
 	uint8_t	c;
 	uint8_t	acb;
 
-	acb = cyc->mem[MEM(pc->i + 1)].byte;
-	c = cyc->mem[MEM(pc->i + 4)].byte;
-	b = cyc->mem[MEM(pc->i + 3)].byte;
-	a = cyc->mem[MEM(pc->i + 2)].byte;
-	if (cyc->mem[MEM(pc->i + 1)].byte == 0x54 && REG(a) && REG(b) && REG(c))
+	acb = cyc->mem[mem(pc->i + 1)].byte;
+	c = cyc->mem[mem(pc->i + 4)].byte;
+	b = cyc->mem[mem(pc->i + 3)].byte;
+	a = cyc->mem[mem(pc->i + 2)].byte;
+	if (cyc->mem[mem(pc->i + 1)].byte == 0x54 && reg(a) && reg(b) && reg(c))
 	{
 		pc->r[c] = pc->r[a] - pc->r[b];
-		pc->i = MEM(pc->i + acb_len(acb, 0));
+		pc->i = mem(pc->i + acb_len(acb, 0));
 		pc->carry = (pc->r[c]) ? 0 : 1;
 	}
 	else
-		pc->i = MEM(pc->i + acb_len(acb, 0));
+		pc->i = mem(pc->i + acb_len(acb, 0));
 }

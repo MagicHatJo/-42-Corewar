@@ -18,9 +18,9 @@ void	op_zjmp(t_cyc *cyc, t_pc *pc)
 
 	if (pc->carry)
 	{
-		cw_memren(&addr, &cyc->mem[MEM(pc->i + 1)], IND_SIZE);
-		pc->i = MEM(pc->i + IDX(addr));
+		cw_memren(&addr, &cyc->mem[mem(pc->i + 1)], IND_SIZE);
+		pc->i = mem(pc->i + idx(addr));
 	}
 	else
-		pc->i = MEM(pc->i + 3);
+		pc->i = mem(pc->i + 3);
 }

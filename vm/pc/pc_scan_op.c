@@ -14,7 +14,7 @@
 
 static void	assign_tmp(t_pc *tmp)
 {
-	tmp->i = MEM(tmp->i + 1);
+	tmp->i = mem(tmp->i + 1);
 	tmp->wait = -1;
 }
 
@@ -30,8 +30,8 @@ static void	set_cycle(t_cyc *cyc, t_pc *tmp)
 		cw_memcp(&cyc->mem[MEM_SIZE], &cyc->mem[0], REG_SIZE);
 	if (ft_memcmp(back, &cyc->mem[MEM_SIZE], sizeof(back)))
 		cw_memcp(&cyc->mem[0], &cyc->mem[MEM_SIZE], REG_SIZE);
-	tmp->wait = REG(cyc->mem[tmp->i].byte) ?
-				WAIT_MOD(cyc->mem[tmp->i].byte) : -1;
+	tmp->wait = reg(cyc->mem[tmp->i].byte) ?
+				wait_mod(cyc->mem[tmp->i].byte) : -1;
 }
 
 void		pc_scan_op(t_cyc *cyc, t_pc *pc)
@@ -43,12 +43,12 @@ void		pc_scan_op(t_cyc *cyc, t_pc *pc)
 	{
 		tmp->wait--;
 		tmp->i %= MEM_SIZE;
-		if (!REG(cyc->mem[tmp->i].byte))
+		if (!reg(cyc->mem[tmp->i].byte))
 			assign_tmp(tmp);
-		else if (REG(cyc->mem[tmp->i].byte) && !tmp->wait)
+		else if (reg(cyc->mem[tmp->i].byte) && !tmp->wait)
 			set_cycle(cyc, tmp);
-		if (tmp->wait < 0 && REG(cyc->mem[tmp->i].byte))
-			tmp->wait = WAIT_MOD(cyc->mem[tmp->i].byte);
+		if (tmp->wait < 0 && reg(cyc->mem[tmp->i].byte))
+			tmp->wait = wait_mod(cyc->mem[tmp->i].byte);
 		cyc->mem[tmp->i].active = (cyc->mem[tmp->i].active == 0) ?
 									1 : cyc->mem[tmp->i].active;
 		tmp = tmp->next;

@@ -24,7 +24,7 @@ t_pc	*pc_new(uint32_t pnum, uint16_t loc, uint8_t op)
 	new->r[1] = pnum;
 	new->carry = 0;
 	new->alive = 0;
-	new->wait = REG(op) ? WAIT_MOD(op) : -1;
+	new->wait = reg(op) ? wait_mod(op) : -1;
 	new->next = NULL;
 	new->prev = NULL;
 	return (new);

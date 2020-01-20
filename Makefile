@@ -5,32 +5,31 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jochang <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2019/05/12 06:50:56 by jochang           #+#    #+#              #
-#    Updated: 2019/05/12 06:50:57 by jochang          ###   ########.fr        #
+#    Created: 2020/01/12 14:40:53 by jochang           #+#    #+#              #
+#    Updated: 2020/01/18 13:34:41 by smonroe          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-ASSEMBLER = asm
-COREWAR = corewar
+ASM :=	asm
+CW	:=	corewar
+ASM_DIR := assembler
+CW_DIR := vm
+CC = gcc
 
-all: $(ASSEMBLER) $(COREWAR)
-
-$(ASSEMBLER):
-	@make -C assembler
-	@mv assembler/asm .
-
-$(COREWAR):
-	@make -C vm
-	@mv vm/corewar .
+all:
+	@make -C $(ASM_DIR)
+	@make -C $(CW_DIR)
+	@mv $(ASM_DIR)/bin/$(ASM) $(CW_DIR)/$(CW) .
 
 clean:
-	@make -C assembler clean
-	@make -C vm clean
+	@make -C $(ASM_DIR) clean
+	@make -C $(CW_DIR) clean
 
 fclean:
-	@make -C assembler fclean
-	@make -C vm fclean
-	@rm -f $(ASSEMBLER) $(COREWAR)
+	@make -C $(ASM_DIR) clean
+	@make -C $(CW_DIR) clean
+	@rm -f $(ASM)
+	@rm -f $(CW)
 
 re: fclean all
 

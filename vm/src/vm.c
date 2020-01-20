@@ -6,7 +6,7 @@
 /*   By: jochang <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/14 00:09:14 by jochang           #+#    #+#             */
-/*   Updated: 2019/03/14 00:09:15 by jochang          ###   ########.fr       */
+/*   Updated: 2020/01/18 14:35:02 by smonroe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void		stepper(t_ncrs *ncrs, t_cyc *cyc, t_head *head, t_flag *flag)
 		if (flag->n)
 			update_gui(ncrs, cyc, head, flag);
 		cyc->cycle++;
-		if (flag->w)
+		if (flag->w && flag->n)
 			set_delay(flag->w);
 		if ((uint32_t)cyc->cycle == flag->d)
 		{

@@ -40,7 +40,7 @@ static void	select_color(t_ncrs *ncrs, t_mem *mem)
 
 static void	deselect_color(t_ncrs *ncrs)
 {
-	wattrset(ncrs->memwin, GRAY_TEXT);
+	wattrset(ncrs->memwin, COLOR_PAIR(21));
 }
 
 void		update_memblock(t_ncrs *ncrs, t_cyc *cycle, t_flag *flag)
@@ -51,7 +51,7 @@ void		update_memblock(t_ncrs *ncrs, t_cyc *cycle, t_flag *flag)
 
 	i = -1;
 	y = 1;
-	wattron(ncrs->memwin, GRAY_TEXT);
+	wattron(ncrs->memwin, COLOR_PAIR(21));
 	while (++i < MEM_SIZE)
 	{
 		x = (i & 63) ? x + 3 : WINDOWS_OFFSET_LEFT;
@@ -67,6 +67,6 @@ void		update_memblock(t_ncrs *ncrs, t_cyc *cycle, t_flag *flag)
 				cycle->mem[i].active = 0;
 		}
 	}
-	wattroff(ncrs->memwin, GRAY_TEXT);
+	wattroff(ncrs->memwin, COLOR_PAIR(21));
 	wnoutrefresh(ncrs->memwin);
 }
